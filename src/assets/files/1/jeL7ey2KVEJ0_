@@ -1,0 +1,113 @@
+struct Trie {
+    struct Node {
+        unordered_map<char,int>ch;
+        int freq=0,isEnd=0;;
+        int best_frq=0;
+        string bestword="";
+        int &operator[](char x) {
+            return ch[x];
+        }
+    };
+    vector<Node>trie;
+    Trie() {
+        trie.clear();
+        newNode();
+    }
+    int newNode() {
+        trie.emplace_back();
+        return trie.size()-1;
+    }
+    void update(string s,int op,int frq) {
+        int u=0;
+        for(auto x:s) {
+
+            if(frq>trie[u].best_frq) {
+                trie[u].best_frq=frq;
+                trie[u].bestword=s;
+            }
+            else if(trie[u].best_frq==frq) {
+                 trie[u].bestword=min(s,trie[u].bestword);
+            }
+            if(!trie[u][x]) {
+                trie[u][x]=newNode();
+            }
+            u=trie[u][x];
+            trie[u].freq+=op;
+        }
+        if (frq > trie[u].best_frq) {
+            trie[u].best_frq = frq;
+            trie[u].bestword = s;
+        } else if (frq == trie[u].best_frq) {
+            trie[u].bestword = min(s, trie[u].bestword);
+        }
+        trie[u].isEnd++;
+    }
+    pair<string,int> search(string &s) {
+        int u=0;
+        for(auto x:s) {
+            if(!trie[u][x]) return {"",-1};
+            u=trie[u][x];
+        }
+        return {trie[u].bestword,trie[u].best_frq};
+    }
+    /*string find(string &s) {
+        int u=0;
+        string res=s;
+        for(auto x:s) {
+           if(!trie[u][x]) return "-1";
+            u=trie[u][x];
+        }
+        while(~trie[u].mnsz) {
+            res.push_back(trie[u].mnChild);
+            u=trie[u][trie[u].mnChild];
+        }
+        return res;
+    }*/
+};
+struct BinaryTrie {
+    const int M=31;
+    struct Node {
+        int ch[2]={};
+        int freq=0;
+        int &operator[](char x) {
+            return ch[x];
+        }
+    };
+    vector<Node>trie;
+    BinaryTrie() {
+        trie.clear();
+        newNode();
+    }
+    int newNode() {
+        trie.emplace_back();
+        return trie.size()-1;
+    }
+    void update(int x,int op) {
+        int u=0;
+        for(int i=M-1;i>=0;i--) {
+            char bit=(x>>i)&1;
+            if(!trie[u][bit]) {
+                trie[u][bit]=newNode();
+            }
+            u=trie[u][bit];
+            trie[u].freq+=op;
+        }
+    }
+    int sz(int u) {
+        return trie[u].freq;
+    }
+    int mnXor(int x) {
+        int u=0,res=0;
+        for(int i=M-1;i>=0;i--) {
+            char bit=(x>>i)&1;
+            if(sz(trie[u][bit])) {
+                u=trie[u][bit];
+            }
+            else {
+                u=trie[u][!bit];
+                res^=(1<<i);
+            }
+        }
+        return res;
+    }
+};
