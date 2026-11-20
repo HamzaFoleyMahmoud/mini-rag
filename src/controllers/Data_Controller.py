@@ -41,6 +41,6 @@ class DataController(BaseController):
         return new_file_path,random_key+ "_"+ cleaned_file_name
     
     def get_clean_filename(self,original_filename:str):
-        cleaned_file_name=re.sub(r'[^w.]', '', original_filename.strip())
+        cleaned_file_name=re.sub(r'[^\w.]', '', original_filename.strip())
         cleaned_file_name=cleaned_file_name.replace(" ","_")
         return cleaned_file_name
